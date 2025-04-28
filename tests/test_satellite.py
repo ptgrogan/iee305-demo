@@ -2,7 +2,7 @@ import pytest
 
 from pydantic import ValidationError
 
-from satellites import Satellite
+from iee305.satellites import Satellite
 
 def test_set_mass():
     satellite = Satellite(acronym="Landsat-7", mass=2100, power=1980)

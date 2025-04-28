@@ -1,4 +1,34 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "iee305"
+version = "0.0.0"
+dependencies = [
+    "fastapi[standard]",
+    "sqlmodel",
+    "pydantic"
+]
+requires-python = ">=3.8"
+authors = [
+    {name = "Paul Grogan", email = "paul.grogan@asu.edu"}
+]
+description = "Example package for IEE 305"
+readme = "README.md"
+license = "BSD-3-Clause"
+license-files = ["LICEN[CS]E.*"]
+
+[project.urls]
+homepage = "https://github.com/ptgrogan/iee305-demo"
+
 [tool.pytest.ini_options]
 pythonpath = [
     "src"
+]
+
+[project.optional-dependencies]
+docs = [
+    "autodoc_pydantic >= 2",
+    "sphinx >= 7"
 ]

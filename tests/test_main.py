@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
-from main import app, get_session
+from iee305.main import app, get_session
 
 @pytest.fixture(name="session")
 def session_fixture():
@@ -24,7 +24,7 @@ def client_fixture(session: Session):
     yield client
     app.dependency_overrides.clear()
 
-from main import Satellite
+from iee305.main import Satellite
 
 def test_get_satellite(session: Session, client: TestClient):
     test_sat = Satellite(acronym="Landsat-7", mass=2100, power=1980)
