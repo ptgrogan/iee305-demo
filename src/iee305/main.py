@@ -25,13 +25,6 @@ class User(SQLModel, table=True):
    username: str = Field(primary_key=True)
    hashed_password: str
 
-class Token(SQLModel):
-   access_token: str
-   token_type: str
-
-class TokenData(SQLModel):
-   username: str | None = None
-
 class UserRead(SQLModel):
    username: str
 
@@ -42,16 +35,6 @@ def authenticate_user(session: Session, username: str, password: str) -> UserRea
    if user is None or not password_hash.verify(password, user.hashed_password):
       return None
    return UserRead.model_validate(user)
-
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -74,6 +57,16 @@ def get_session():
     with Session(engine) as session:
         yield session
 
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -85,11 +78,10 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         username = payload.get("sub")
         if username is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
     except InvalidTokenError:
         raise credentials_exception
     with Session(engine) as session:
-      user = session.get(User, token_data.username)
+      user = session.get(User, username)
       if user is None:
           raise credentials_exception
       return user
@@ -177,6 +169,10 @@ def delete_satellite(
     raise HTTPException(404, f"Satellite {id} not found")
   session.delete(db_sat)
   session.commit()
+
+class Token(SQLModel):
+   access_token: str
+   token_type: str
 
 @app.post("/token")
 async def login_for_access_token(
