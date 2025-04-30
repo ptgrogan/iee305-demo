@@ -1,3 +1,5 @@
 pydantic
 fastapi[standard]
 sqlmodel
+pyjwt
+pwdlib[argon2]
