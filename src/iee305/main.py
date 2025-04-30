@@ -97,6 +97,7 @@ class SatelliteCreate(SQLModel):
 @app.post("/satellites/")
 def create_satellite(
     sat: SatelliteCreate,
+    current_user: Annotated[UserRead, Depends(get_current_user)], 
     session: Session = Depends(get_session)
 ) -> int:
   db_sat = Satellite.model_validate(sat)
@@ -131,6 +132,7 @@ def read_satellites(
 def update_satellite(
     id: int,
     sat: SatelliteCreate,
+    current_user: Annotated[UserRead, Depends(get_current_user)], 
     session: Session = Depends(get_session)
 ) -> SatelliteRead:
   db_sat = session.get(Satellite, id)
@@ -151,6 +153,7 @@ class SatelliteUpdate(SQLModel):
 def patch_satellite(
     id: int,
     sat: SatelliteUpdate,
+    current_user: Annotated[UserRead, Depends(get_current_user)], 
     session: Session = Depends(get_session)
 ) -> SatelliteRead:
   db_sat = session.get(Satellite, id)
@@ -165,7 +168,8 @@ def patch_satellite(
 @app.delete("/satellites/{id}")
 def delete_satellite(
    id: int,
-   session: Session = Depends(get_session)
+   current_user: Annotated[UserRead, Depends(get_current_user)], 
+   session: Session = Depends(get_session),  
 ):
   db_sat = session.get(Satellite, id)
   if db_sat is None: 
