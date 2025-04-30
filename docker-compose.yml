@@ -31,8 +31,9 @@ services:
     labels:
       - traefik.enable=false
 
-  whoami:
-    image: traefik/whoami:v1.10
+  iee305:
+    build:
+      context: .
     networks:
       - proxy
     labels:
